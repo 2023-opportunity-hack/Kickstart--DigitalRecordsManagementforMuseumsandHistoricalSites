@@ -1,7 +1,7 @@
 import torch
 from transformers import T5ForConditionalGeneration, T5Tokenizer
 import PyPDF2
-
+# test
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = T5ForConditionalGeneration.from_pretrained("Michau/t5-base-en-generate-headline")
