@@ -18,6 +18,12 @@ from transformers import (
 from transformers.pipelines import AggregationStrategy
 import numpy as np
 
+from pptx import Presentation
+import docx
+# import wpd
+# import win32com.client
+
+
 # PDF TEXT EXTRACTION
 def extract_text_from_pdf(pdf_file_path):
     text = ""
@@ -32,6 +38,7 @@ def extract_text_from_pdf(pdf_file_path):
         print(f"Error extracting text from PDF: {str(e)}")
     return text
 
+
 def extract_text_from_txt_file(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
@@ -41,6 +48,53 @@ def extract_text_from_txt_file(file_path):
         return f"File not found: {file_path}"
     except Exception as e:
         return f"An error occurred: {str(e)}"
+
+
+def extract_text_from_powerpoint(file_path):
+    # Replace 'your_presentation.pptx' with the actual path to your PowerPoint file
+    # pptx_file = 'your_presentation.pptx'
+
+    # Load the PowerPoint presentation
+    presentation = Presentation(file_path, encoding='ISO-8859-1')
+
+    all_text = ""
+
+    # Iterate through slides and extract text content
+    for slide in presentation.slides:
+        for shape in slide.shapes:
+            if shape.has_text_frame:
+                text_frame = shape.text_frame
+                for paragraph in text_frame.paragraphs:
+                    for run in paragraph.runs:
+                        try:
+                            text = run.text.encode('ISO-8859-1', 'ignore').decode('ISO-8859-1')
+                            all_text += text + "\n"  # Add a newline separator
+                        except UnicodeEncodeError:
+                            all_text += "Encoding Error\n"
+
+                            # Close the presentation file
+    presentation.close()
+
+    # Print or use the 'all_text' variable
+    return all_text
+
+
+def extract_from_docx(file_path):
+    # Replace 'your_document.docx' with the actual path to your Word document
+    docx_file = 'your_document.docx'
+
+    # Load the Word document
+    doc = docx.Document(file_path)
+
+    # Initialize an empty string to store the extracted text
+    all_text = ""
+
+    # Iterate through paragraphs and extract text
+    for paragraph in doc.paragraphs:
+        text = paragraph.text
+        all_text += text + "\n"  # Add a newline separator
+    return all_text
+
 
 # HEADLINE GENERATION
 def headline_generation(article):
@@ -62,6 +116,8 @@ def headline_generation(article):
 
     headline = tokenizer.decode(beam_outputs[0])
     return headline
+
+
 # KEYPHRASE EXTRACTION
 # Define keyphrase extraction pipeline
 def KeyphraseExtration(article):
@@ -88,19 +144,25 @@ def KeyphraseExtration(article):
     return keyphrases
 
 
-
-file_path = "test_files/fabian.txt"
+file_path = "test_files/20190501_FPDKC Meeting_AGENDA.docx"
 
 if file_path.endswith(".pdf"):
-    article = "headline: " + extract_text_from_pdf(file_path)
+    article_text = "headline: " + extract_text_from_pdf(file_path)
 elif file_path.endswith(".txt"):
-    article = "headline: " + extract_text_from_txt_file(file_path)
+    article_text = "headline: " + extract_text_from_txt_file(file_path)
+# elif file_path.endswith(".pptx"):
+#     article_text = "headline: " + extract_text_from_txt_file(file_path)
+elif file_path.endswith(".docx"):
+    article_text = "headline: " + extract_from_docx(file_path)
+# elif file_path.endswith(".doc"):
+#     article_text = "headline: " + extract_from_doc(file_path)
+# elif file_path.endswith(".wpd"):
+#     article_text = "headline: " + extract_from_wpd(file_path)
 else:
     raise TypeError("File Type Not Recognized")
 
-# print(article)
-headline = headline_generation(article)
-keyphrases = KeyphraseExtration(article)
+headline = headline_generation(article_text)
+keyphrases = KeyphraseExtration(article_text)
 # PRINT HEADLINE AND KEYPHRASES
-print(headline)
-print(keyphrases)
+print("Headline: ", headline)
+print("Key Phrases: ", keyphrases)

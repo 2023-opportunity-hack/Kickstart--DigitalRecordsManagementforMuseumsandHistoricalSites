@@ -3,3 +3,4 @@ transformers
 PyPDF2
 numpy
 SentencePiece
+python-docx
