@@ -1,9 +1,11 @@
 def text_process(file_path):
+    from striprtf.striprtf import rtf_to_text
+    import platform
     import torch
     # import SentencePiece
     # extract text from PDF
     import PyPDF2
-
+    import os
     from transformers import (
         # headline generation libraries
         T5ForConditionalGeneration,
@@ -36,6 +38,34 @@ def text_process(file_path):
             print(f"Error extracting text from PDF: {str(e)}")
         return text
 
+    def read_from_doc(file_path):
+        if platform.system() == "Windows":
+            raise RuntimeError("win32com.client is only available on Windows.")
+        
+        import win32com.client
+
+        full_path = os.path.abspath(file_path)
+        word = win32com.client.Dispatch("Word.Application")
+        word.visible = False
+        wb = word.Documents.Open(full_path)
+        doc = word.ActiveDocument
+
+        document_text = []
+
+        # Loop through paragraphs and append them to the document_text string
+        for paragraph in doc.Paragraphs:
+            document_text.append(paragraph.Range.Text.replace("\r", ""))
+            
+        return "".join(document_text)
+        
+
+    def read_from_rtf(file_path):
+        
+        with open("rtf_test.rtf") as infile:
+            content = infile.read()
+            text = rtf_to_text(content)
+        return text
+        
     def extract_text_from_txt_file(file_path):
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
