@@ -159,7 +159,7 @@ def text_process(file_path):
 
         # Filter out stopwords, punctuation marks, and '\n'
         keywords = [token.text.lower() for token in doc if
-                    not token.is_stop and not token.is_punct and token.text != '\n']
+                    not token.is_stop and not token.is_punct and token.text != '\n' and token.text != '\n\n']
 
         # Count the frequency of each keyword
         keyword_freq = Counter(keywords)
