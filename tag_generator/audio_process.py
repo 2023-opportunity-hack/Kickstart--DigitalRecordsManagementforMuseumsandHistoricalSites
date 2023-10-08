@@ -90,6 +90,7 @@ def audio_process(file_path,extension):
     
     print("Transcribing the audio file")
     transcripts = get_large_audio_transcription_on_silence("temp.wav")
+    print("Transcriped successfuly")
     os.remove("temp.wav")
     # return text_process.text_process(transcripts)
     text_file = open("Output.txt", "w")
@@ -97,6 +98,10 @@ def audio_process(file_path,extension):
     text_file.close()
 
     output = text_process.text_process("Output.txt")
+    if extension == ".mp4":
+        output["tags"] = output["tags"].append("Video File")
+    else:
+        output["tags"] = output["tags"].append("Audio File")
     os.remove("Output.txt")
     return output
  
