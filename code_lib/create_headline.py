@@ -32,25 +32,18 @@ def extract_text_from_pdf(pdf_file_path):
         print(f"Error extracting text from PDF: {str(e)}")
     return text
 
+# article file path
+article = "headline: " + extract_text_from_pdf("test_files/VillaGarden.1pghistory.doc.pdf")
+
 # headline generation
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 model = T5ForConditionalGeneration.from_pretrained("Michau/t5-base-en-generate-headline")
 tokenizer = T5Tokenizer.from_pretrained("Michau/t5-base-en-generate-headline")
 model = model.to(device)
 
-
-
-
-# article file path
-article = extract_text_from_pdf("test_files/VillaGarden.1pghistory.doc.pdf")
-
-
-text = "headline: " + article
-
 max_len = 256
 
-encoding = tokenizer.encode_plus(text, return_tensors="pt")
+encoding = tokenizer.encode_plus(article, return_tensors="pt")
 input_ids = encoding["input_ids"].to(device)
 attention_masks = encoding["attention_mask"].to(device)
 
