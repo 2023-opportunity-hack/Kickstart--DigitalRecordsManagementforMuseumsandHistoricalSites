@@ -1,6 +1,6 @@
-def text_process():
+def text_process(file_path):
     import torch
-
+    # import SentencePiece
     # extract text from PDF
     import PyPDF2
 
@@ -19,6 +19,12 @@ def text_process():
     from transformers.pipelines import AggregationStrategy
     import numpy as np
 
+    from pptx import Presentation
+    import docx
+    # import wpd
+    # import win32com.client
+
+
     # PDF TEXT EXTRACTION
     def extract_text_from_pdf(pdf_file_path):
         text = ""
@@ -33,51 +39,141 @@ def text_process():
             print(f"Error extracting text from PDF: {str(e)}")
         return text
 
-    article = "headline: " + extract_text_from_pdf("test_files/SIG")
+
+    def extract_text_from_txt_file(file_path):
+        try:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                text = file.read()
+            return text
+        except FileNotFoundError:
+            return f"File not found: {file_path}"
+        except Exception as e:
+            return f"An error occurred: {str(e)}"
+
+
+    def extract_text_from_powerpoint(file_path):
+        # Replace 'your_presentation.pptx' with the actual path to your PowerPoint file
+        # pptx_file = 'your_presentation.pptx'
+
+        # Load the PowerPoint presentation
+        presentation = Presentation(file_path, encoding='ISO-8859-1')
+
+        all_text = ""
+
+        # Iterate through slides and extract text content
+        for slide in presentation.slides:
+            for shape in slide.shapes:
+                if shape.has_text_frame:
+                    text_frame = shape.text_frame
+                    for paragraph in text_frame.paragraphs:
+                        for run in paragraph.runs:
+                            try:
+                                text = run.text.encode('ISO-8859-1', 'ignore').decode('ISO-8859-1')
+                                all_text += text + "\n"  # Add a newline separator
+                            except UnicodeEncodeError:
+                                all_text += "Encoding Error\n"
+
+                                # Close the presentation file
+        presentation.close()
+
+        # Print or use the 'all_text' variable
+        return all_text
+
+
+    def extract_from_docx(file_path):
+        # Replace 'your_document.docx' with the actual path to your Word document
+        docx_file = 'your_document.docx'
+
+        # Load the Word document
+        doc = docx.Document(file_path)
+
+        # Initialize an empty string to store the extracted text
+        all_text = ""
+
+        # Iterate through paragraphs and extract text
+        for paragraph in doc.paragraphs:
+            text = paragraph.text
+            all_text += text + "\n"  # Add a newline separator
+        return all_text
+
 
     # HEADLINE GENERATION
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = T5ForConditionalGeneration.from_pretrained("Michau/t5-base-en-generate-headline")
-    tokenizer = T5Tokenizer.from_pretrained("Michau/t5-base-en-generate-headline")
-    model = model.to(device)
-    max_len = 256
-    encoding = tokenizer.encode_plus(article, return_tensors="pt")
-    input_ids = encoding["input_ids"].to(device)
-    attention_masks = encoding["attention_mask"].to(device)
-    beam_outputs = model.generate(
-        input_ids=input_ids,
-        attention_mask=attention_masks,
-        max_length=64,
-        num_beams=3,
-        early_stopping=True,
-    )
+    def headline_generation(article):
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        model = T5ForConditionalGeneration.from_pretrained("Michau/t5-base-en-generate-headline")
+        tokenizer = T5Tokenizer.from_pretrained("Michau/t5-base-en-generate-headline")
+        model = model.to(device)
+        max_len = 256
+        encoding = tokenizer.encode_plus(article, return_tensors="pt")
+        input_ids = encoding["input_ids"].to(device)
+        attention_masks = encoding["attention_mask"].to(device)
+        beam_outputs = model.generate(
+            input_ids=input_ids,
+            attention_mask=attention_masks,
+            max_length=64,
+            num_beams=3,
+            early_stopping=True,
+        )
 
-    headline = tokenizer.decode(beam_outputs[0])
+        headline = tokenizer.decode(beam_outputs[0])
+        import re
+        pattern = r'<[^>]+>'
+        result = re.sub(pattern, '', headline)
+        return result.lstrip()
+
+
 
     # KEYPHRASE EXTRACTION
     # Define keyphrase extraction pipeline
-    class KeyphraseExtractionPipeline(TokenClassificationPipeline):
-        def __init__(self, model, *args, **kwargs):
-            super().__init__(
-                model=AutoModelForTokenClassification.from_pretrained(model),
-                tokenizer=AutoTokenizer.from_pretrained(model),
-                *args,
-                **kwargs
-            )
+    def KeyphraseExtration(article):
+        class KeyphraseExtractionPipeline(TokenClassificationPipeline):
+            def __init__(self, model, *args, **kwargs):
+                super().__init__(
+                    model=AutoModelForTokenClassification.from_pretrained(model),
+                    tokenizer=AutoTokenizer.from_pretrained(model),
+                    *args,
+                    **kwargs
+                )
 
-        def postprocess(self, all_outputs):
-            results = super().postprocess(
-                all_outputs=all_outputs,
-                aggregation_strategy=AggregationStrategy.FIRST,
-            )
-            return np.unique([result.get("word").strip() for result in results])
+            def postprocess(self, all_outputs):
+                results = super().postprocess(
+                    all_outputs=all_outputs,
+                    aggregation_strategy=AggregationStrategy.FIRST,
+                )
+                return np.unique([result.get("word").strip() for result in results])
+                
+                
 
-    # Load pipeline
-    model_name = "ml6team/keyphrase-extraction-distilbert-inspec"
-    extractor = KeyphraseExtractionPipeline(model=model_name)
-    keyphrases = extractor(article)
+        # Load pipeline
+        model_name = "ml6team/keyphrase-extraction-distilbert-inspec"
+        extractor = KeyphraseExtractionPipeline(model=model_name)
+        keyphrases = extractor(article)
+        ans = []
+        for x in keyphrases:
+            ans.append(x)
+        return ans
 
+
+    # file_path = "test_files/20190501_FPDKC Meeting_AGENDA.docx"
+
+    if file_path.endswith(".pdf"):
+        article_text = "headline: " + extract_text_from_pdf(file_path)
+    elif file_path.endswith(".txt"):
+        article_text = "headline: " + extract_text_from_txt_file(file_path)
+    # elif file_path.endswith(".pptx"):
+    #     article_text = "headline: " + extract_text_from_txt_file(file_path)
+    elif file_path.endswith(".docx"):
+        article_text = "headline: " + extract_from_docx(file_path)
+    # elif file_path.endswith(".doc"):
+    #     article_text = "headline: " + extract_from_doc(file_path)
+    # elif file_path.endswith(".wpd"):
+    #     article_text = "headline: " + extract_from_wpd(file_path)
+    else:
+        raise TypeError("File Type Not Recognized")
+
+    headline = headline_generation(article_text)
+    keyphrases = KeyphraseExtration(article_text)
     # PRINT HEADLINE AND KEYPHRASES
-    print(headline)
-    print(keyphrases)
+    print("Headline: ", headline)
+    print("Key Phrases: ", keyphrases)
     return [headline] + keyphrases
