@@ -24,7 +24,6 @@ def text_process(file_path):
     # import wpd
     # import win32com.client
 
-
     # PDF TEXT EXTRACTION
     def extract_text_from_pdf(pdf_file_path):
         text = ""
@@ -39,7 +38,6 @@ def text_process(file_path):
             print(f"Error extracting text from PDF: {str(e)}")
         return text
 
-
     def extract_text_from_txt_file(file_path):
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
@@ -49,7 +47,6 @@ def text_process(file_path):
             return f"File not found: {file_path}"
         except Exception as e:
             return f"An error occurred: {str(e)}"
-
 
     def extract_text_from_powerpoint(file_path):
         # Replace 'your_presentation.pptx' with the actual path to your PowerPoint file
@@ -79,7 +76,6 @@ def text_process(file_path):
         # Print or use the 'all_text' variable
         return all_text
 
-
     def extract_from_docx(file_path):
         # Replace 'your_document.docx' with the actual path to your Word document
         docx_file = 'your_document.docx'
@@ -95,7 +91,6 @@ def text_process(file_path):
             text = paragraph.text
             all_text += text + "\n"  # Add a newline separator
         return all_text
-
 
     # HEADLINE GENERATION
     def headline_generation(article):
@@ -121,8 +116,6 @@ def text_process(file_path):
         result = re.sub(pattern, '', headline)
         return result.lstrip()
 
-
-
     # KEYPHRASE EXTRACTION
     # Define keyphrase extraction pipeline
     def KeyphraseExtration(article):
@@ -141,8 +134,6 @@ def text_process(file_path):
                     aggregation_strategy=AggregationStrategy.FIRST,
                 )
                 return np.unique([result.get("word").strip() for result in results])
-                
-                
 
         # Load pipeline
         model_name = "ml6team/keyphrase-extraction-distilbert-inspec"
@@ -152,7 +143,6 @@ def text_process(file_path):
         for x in keyphrases:
             ans.append(x)
         return ans
-
 
     # file_path = "test_files/20190501_FPDKC Meeting_AGENDA.docx"
 
