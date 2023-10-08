@@ -4,3 +4,6 @@ PyPDF2
 numpy
 SentencePiece
 python-docx
+moviepy
+SpeechRecognition
+pydub
