@@ -62,6 +62,8 @@ Our system exposes the following RESTful APIs:
 4. Start the applications (**tag_generator.py, KickstartApplication, npm run start(Frontend directory)**).
 5. Access the user interface or interact with the REST APIs.
 
+## Project Demo
+[Demo Link](https://www.youtube.com/watch?v=IYazcxefW_c)
 
 ## Remaining Task Estimation
 
