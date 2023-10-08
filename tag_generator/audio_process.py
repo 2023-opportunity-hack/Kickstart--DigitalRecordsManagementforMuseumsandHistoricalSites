@@ -92,8 +92,13 @@ def audio_process(file_path,extension):
     transcripts = get_large_audio_transcription_on_silence("temp.wav")
     os.remove("temp.wav")
     # return text_process.text_process(transcripts)
-    print(transcripts)
-    return transcripts
+    text_file = open("Output.txt", "w")
+    text_file.write(transcripts)
+    text_file.close()
+
+    output = text_process.text_process("Output.txt")
+    os.remove("Output.txt")
+    return output
  
 
 
