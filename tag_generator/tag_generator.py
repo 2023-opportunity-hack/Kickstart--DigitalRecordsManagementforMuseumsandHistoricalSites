@@ -27,11 +27,13 @@ def process_file(file_path):
 
     elif file_extension in SUPPORTED_AUDIO_EXTENSIONS:
         print("Processing audio file")
-        audio_process.audio_process(file_path,file_extension)
+        return jsonify(audio_process.audio_process(file_path))
+        # audio_process.audio_process(file_path,file_extension)
 
     elif file_extension in SUPPORTED_TEXT_EXTENSIONS:
         print("Processing text file")
-        tags = text_process.text_process(file_path)
+        return jsonify(text_process.text_process(file_path))
+        
 
     else:
         print("ERROR: **Unknown file format**")
@@ -46,20 +48,6 @@ def process_file(file_path):
             print(f"File '{file_path}' not found.")
         except Exception as e:
             print(f"An error occurred: {e}")
-        
-        
-
-
-    
-    with open(file_path, 'r', encoding='utf-8') as file:
-        file_content = file.read()
-    
-    # Create a JSON response with the file content
-    if tags:
-        response_data = {'file_path': file_path, 'tags': tags}
-    else:
-        response_data = {'file_path': file_path}   
-    return jsonify(response_data)
 
 if __name__ == '__main__':
     app.run(debug=True)
