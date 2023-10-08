@@ -27,7 +27,7 @@ def process_file(file_path):
 
     elif file_extension in SUPPORTED_AUDIO_EXTENSIONS:
         print("Processing audio file")
-        return jsonify(audio_process.audio_process(file_path))
+        return jsonify(audio_process.audio_process(file_path,file_extension))
         # audio_process.audio_process(file_path,file_extension)
 
     elif file_extension in SUPPORTED_TEXT_EXTENSIONS:
