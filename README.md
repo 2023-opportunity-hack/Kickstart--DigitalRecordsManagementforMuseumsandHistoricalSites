@@ -68,7 +68,8 @@ Our system exposes the following RESTful APIs:
 | Remaining Tasks  | Estimation Time | 
 |----------|----------|
 | Total Ready to ship package | 2 weeks | 
-| Containerization/Dockerization of All Processes | 3 Days | 
+| Containerization/Dockerization of All Processes | 2 Days |
+| UI Revamp | 1 day |
 | Testing on the entire dataset | 4 days |
 | Buffer week for any bugs | 7 days |
 
