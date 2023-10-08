@@ -23,7 +23,7 @@ def process_file(file_path):
 
     if file_extension in SUPPORTED_IMAGE_EXTENSIONS:
         print("Processing image file")
-        image_process.image_process()
+        return jsonify(image_process.image_process(file_path))
 
     elif file_extension in SUPPORTED_AUDIO_EXTENSIONS:
         print("Processing audio file")
