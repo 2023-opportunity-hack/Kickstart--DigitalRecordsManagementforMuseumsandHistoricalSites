@@ -13,6 +13,13 @@ def image_process(image_path):
 
     out = model.generate(**inputs)
     image_context = processor.decode(out[0], skip_special_tokens=True)
+    
+    newspaper_flag = False
+    if "newspaper" in (image_context.lower()):
+        print("Given photo is likely scan of newspaper")
+        newspaper_flag = True
+
+
 
     # Get text from image
     text = pytesseract.image_to_string(image)
@@ -28,6 +35,11 @@ def image_process(image_path):
     import text_process
     import os
     output = text_process.text_process("Output.txt")
+
+    if newspaper_flag:
+        output["tags"] = output["tags"].append("Newspaper Scan")
+    else:
+        output["tags"] = output["tags"].append("Image")
     os.remove("Output.txt")
     return output
 
