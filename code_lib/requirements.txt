@@ -7,3 +7,6 @@ python-docx
 moviepy
 SpeechRecognition
 pydub
+striprtf
+flask
+pytesseract
