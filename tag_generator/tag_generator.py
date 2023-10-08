@@ -11,7 +11,7 @@ def process_file(file_path):
     
     SUPPORTED_IMAGE_EXTENSIONS = ['.jpg','.jpeg','.png'] #support for bmp?
     SUPPORTED_AUDIO_EXTENSIONS = ['.mp3','.wav']
-    SUPPORTED_TEXT_EXTENSIONS = ['.txt','.text','.pdf','.docx','.ppt']
+    SUPPORTED_TEXT_EXTENSIONS = ['.txt','.pdf','.docx']
     UNSUPPORTED_FORMAT_PATH = "UNSUPPORTED/"
     # Check if the file exists
     if not os.path.isfile(file_path):
