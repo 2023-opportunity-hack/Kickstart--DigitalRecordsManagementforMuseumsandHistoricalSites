@@ -43,7 +43,7 @@ model = model.to(device)
 
 
 # article file path
-article = extract_text_from_pdf("VillaGarden.1pghistory.doc.pdf")
+article = extract_text_from_pdf("test_files/VillaGarden.1pghistory.doc.pdf")
 
 
 text = "headline: " + article
