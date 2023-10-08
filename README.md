@@ -17,7 +17,7 @@ Heritage Hub System is a robust solution for organizing and making searchable a 
 | Front-end | React.JS, HTML5, CSS3, JavaScript |
 
 
-## High-Level Architecture Diagram
+## Architecture Diagrams
 1. **Module 1 - Pre-Processing Architecture**
 ![Pre-Processing Architecture Diagram](Pre-Processing.jpg)
 
@@ -25,6 +25,11 @@ Heritage Hub System is a robust solution for organizing and making searchable a 
 2. **Module 2 - File Retrieval Architecture**
    
 ![File Retrieval Architecture Diagram](File_Retreival.jpg)
+
+
+3. **Metadata extraction Architecture**
+   
+![Metadata extraction Architecture Diagram](Pre-Processing-Page-2.jpg)
 
 ## Why Our Solution is Better Than Others
 
@@ -52,12 +57,20 @@ Our system exposes the following RESTful APIs:
 ## Steps to Setup and Run the Application
 
 1. Clone this repository to your local machine.
-2. Install the required dependencies mentioned in the `requirements.txt` file.
+2. Do the environment setup as mentioned in the [Environment Setup Guide](Environment_Setup_Guide.md) file.
 3. Configure the system by updating the necessary settings.
-4. Start the applications (**tag_generator.py, KickstartApplication, start**).
+4. Start the applications (**tag_generator.py, KickstartApplication, npm run start(Frontend directory)**).
 5. Access the user interface or interact with the REST APIs.
 
 
+## Remaining Task Estimation
+
+| Remaining Tasks  | Estimation Time | 
+|----------|----------|
+| Total Ready to ship package | 2 weeks | 
+| Containerization/Dockerization of All Processes | 3 Days | 
+| Testing on the entire dataset | 4 days |
+| Buffer week for any bugs | 7 days |
 
 ## Future Enhancements and Scope
 
