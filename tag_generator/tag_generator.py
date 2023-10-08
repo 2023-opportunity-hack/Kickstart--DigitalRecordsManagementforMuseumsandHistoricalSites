@@ -10,8 +10,8 @@ app = Flask(__name__)
 def process_file(file_path):
     
     SUPPORTED_IMAGE_EXTENSIONS = ['.jpg','.jpeg','.png'] #support for bmp?
-    SUPPORTED_AUDIO_EXTENSIONS = ['.mp3','.mp4']
-    SUPPORTED_TEXT_EXTENSIONS = ['.txt','.text','.pdf','.docx','.ppt']
+    SUPPORTED_AUDIO_EXTENSIONS = ['.mp3','.wav']
+    SUPPORTED_TEXT_EXTENSIONS = ['.txt','.pdf','.docx']
     UNSUPPORTED_FORMAT_PATH = "UNSUPPORTED/"
     # Check if the file exists
     if not os.path.isfile(file_path):
@@ -31,7 +31,7 @@ def process_file(file_path):
 
     elif file_extension in SUPPORTED_TEXT_EXTENSIONS:
         print("Processing text file")
-        text_process.text_process()
+        tags = text_process.text_process(file_path)
 
     else:
         print("ERROR: **Unknown file format**")
@@ -55,7 +55,10 @@ def process_file(file_path):
         file_content = file.read()
     
     # Create a JSON response with the file content
-    response_data = {'file_path': file_path, 'content': file_content}
+    if tags:
+        response_data = {'file_path': file_path, 'content': file_content, 'tags': tags}
+    else:
+        response_data = {'file_path': file_path, 'content': file_content}   
     return jsonify(response_data)
 
 if __name__ == '__main__':
