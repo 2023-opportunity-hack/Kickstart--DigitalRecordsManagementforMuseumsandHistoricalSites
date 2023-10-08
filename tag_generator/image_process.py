@@ -16,7 +16,20 @@ def image_process(image_path):
 
     # Get text from image
     text = pytesseract.image_to_string(image)
-    tags = text.split('\n')
+    print(text)
+    # tags = text.split('\n')
 
-    tags.append(image_context)
+    image_text = text + image_context
+    
+    text_file = open("Output.txt", "w")
+    text_file.write(image_text)
+    text_file.close()
+
+    import text_process
+    import os
+    output = text_process.text_process("Output.txt")
+    os.remove("Output.txt")
+    return output
+
+    # tags.append(image_context)
     return {"file":image_path,"tags":tags}
