@@ -32,7 +32,15 @@ def process_file(file_path):
 
     elif file_extension in SUPPORTED_TEXT_EXTENSIONS:
         print("Processing text file")
-        return jsonify(text_process.text_process(file_path))
+        output = text_process.text_process(file_path)
+        
+        output["tags"] = output["tags"].append("Text File")
+        output["tags"] = output["tags"].append("Document")
+
+        if file_extension == ".pdf":
+            output["tags"] = output["tags"].append("pdf file")
+        
+        return jsonify(output)
         
 
     else:
