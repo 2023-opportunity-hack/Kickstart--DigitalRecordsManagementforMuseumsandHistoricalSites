@@ -193,4 +193,5 @@ def text_process(file_path):
     # PRINT HEADLINE AND KEYPHRASES
     print("Headline: ", headline)
     print("Key Phrases: ", keyphrases)
-    return [headline] + keyphrases
+    tags = [headline] + keyphrases
+    return {"file":file_path,"tags":tags}
