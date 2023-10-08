@@ -17,8 +17,8 @@ Heritage Hub System is a robust solution for organizing and making searchable a 
 
 
 ## High-Level Architecture Diagram
-
-![Image Alt Text](path-to-your-image.png)
+1. **Module 1 - Pre-Processing Architecture**
+![Pre-Processing Architecture Diagram](Pre-Processing.jpg)
 
 A visual representation of the system's architecture can be found [here](https://drive.google.com/file/d/1FyK9unHUHifij5pALbXlaxMip9Kfdan1/view?usp=sharing).
 
