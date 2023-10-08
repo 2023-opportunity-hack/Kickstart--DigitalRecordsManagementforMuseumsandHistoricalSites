@@ -10,7 +10,7 @@ app = Flask(__name__)
 def process_file(file_path):
     
     SUPPORTED_IMAGE_EXTENSIONS = ['.jpg','.jpeg','.png'] #support for bmp?
-    SUPPORTED_AUDIO_EXTENSIONS = ['.mp3','.wav']
+    SUPPORTED_AUDIO_EXTENSIONS = ['.mp3','.mp4']
     SUPPORTED_TEXT_EXTENSIONS = ['.txt','.text','.pdf','.docx','.ppt']
     UNSUPPORTED_FORMAT_PATH = "UNSUPPORTED/"
     # Check if the file exists
@@ -27,7 +27,7 @@ def process_file(file_path):
 
     elif file_extension in SUPPORTED_AUDIO_EXTENSIONS:
         print("Processing audio file")
-        audio_process.audio_process()
+        audio_process.audio_process(file_path,file_extension)
 
     elif file_extension in SUPPORTED_TEXT_EXTENSIONS:
         print("Processing text file")
