@@ -14,8 +14,9 @@ def process_file(file_path):
     SUPPORTED_TEXT_EXTENSIONS = ['.txt','.pdf','.docx','.doc','.rtfs']
     UNSUPPORTED_FORMAT_PATH = "UNSUPPORTED/"
     # Check if the file exists
-    if not os.path.isfile(file_path):
-        return jsonify({'error': 'Bad file'}), 200
+    # if not os.path.isfile(file_path):
+    #     print("file path is: ", file_path)
+    #     return jsonify({'error': 'Bad file'}), 200
     
     
     # Read the content of the file
@@ -30,7 +31,7 @@ def process_file(file_path):
 
     elif file_extension in SUPPORTED_AUDIO_EXTENSIONS:
         print("Processing audio file")
-        output = image_process.image_process(file_path)
+        output = audio_process.audio_process(file_path, file_extension)
         output["file_format"] = file_extension
         return jsonify(output)  
 
@@ -38,13 +39,15 @@ def process_file(file_path):
         print("Processing text file")
         output = text_process.text_process(file_path)
         
-        output["tags"] = output["tags"].append("Text File")
-        output["tags"] = output["tags"].append("Document")
+        print(output['tags'])
+        output["tags"].append("Text File")
+        output["tags"].append("Document")
 
         if file_extension == ".pdf":
-            output["tags"] = output["tags"].append("pdf file")
+            output["tags"].append("pdf file")
 
         output["file_format"] = file_extension
+        output["file"] = file_path
         return jsonify(output)  
      
     else:

@@ -224,4 +224,5 @@ def text_process(file_path):
     print("Headline: ", headline)
     print("Key Phrases: ", keyphrases)
     tags = [headline] + keyphrases
+    print({"file":file_path,"tags":tags})
     return {"file":file_path,"tags":tags}

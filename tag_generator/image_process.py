@@ -37,9 +37,9 @@ def image_process(image_path):
     output = text_process.text_process("Output.txt")
 
     if newspaper_flag:
-        output["tags"] = output["tags"].append("Newspaper Scan")
+        output["tags"].append("Newspaper Scan")
     else:
-        output["tags"] = output["tags"].append("Image")
+        output["tags"].append("Image")
     os.remove("Output.txt")
     return output
 

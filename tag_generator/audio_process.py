@@ -99,9 +99,9 @@ def audio_process(file_path,extension):
 
     output = text_process.text_process("Output.txt")
     if extension == ".mp4":
-        output["tags"] = output["tags"].append("Video File")
+        output["tags"].append("Video File")
     else:
-        output["tags"] = output["tags"].append("Audio File")
+        output["tags"].append("Audio File")
     os.remove("Output.txt")
     return output
  
