@@ -32,4 +32,4 @@ def image_process(image_path):
     return output
 
     # tags.append(image_context)
-    return {"file":image_path,"tags":tags}
+    # return {"file":image_path,"tags":tags}
