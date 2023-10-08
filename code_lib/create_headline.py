@@ -18,7 +18,7 @@ from transformers import (
 from transformers.pipelines import AggregationStrategy
 import numpy as np
 
-# extract text from PDF file
+# PDF TEXT EXTRACTION
 def extract_text_from_pdf(pdf_file_path):
     text = ""
     try:
@@ -32,21 +32,17 @@ def extract_text_from_pdf(pdf_file_path):
         print(f"Error extracting text from PDF: {str(e)}")
     return text
 
-# article file path
 article = "headline: " + extract_text_from_pdf("test_files/VillaGarden.1pghistory.doc.pdf")
 
-# headline generation
+# HEADLINE GENERATION
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = T5ForConditionalGeneration.from_pretrained("Michau/t5-base-en-generate-headline")
 tokenizer = T5Tokenizer.from_pretrained("Michau/t5-base-en-generate-headline")
 model = model.to(device)
-
 max_len = 256
-
 encoding = tokenizer.encode_plus(article, return_tensors="pt")
 input_ids = encoding["input_ids"].to(device)
 attention_masks = encoding["attention_mask"].to(device)
-
 beam_outputs = model.generate(
     input_ids=input_ids,
     attention_mask=attention_masks,
@@ -57,7 +53,7 @@ beam_outputs = model.generate(
 
 headline = tokenizer.decode(beam_outputs[0])
 
-
+# KEYPHRASE EXTRACTION
 # Define keyphrase extraction pipeline
 class KeyphraseExtractionPipeline(TokenClassificationPipeline):
     def __init__(self, model, *args, **kwargs):
@@ -75,12 +71,11 @@ class KeyphraseExtractionPipeline(TokenClassificationPipeline):
         )
         return np.unique([result.get("word").strip() for result in results])
 
-
 # Load pipeline
 model_name = "ml6team/keyphrase-extraction-distilbert-inspec"
 extractor = KeyphraseExtractionPipeline(model=model_name)
-
 keyphrases = extractor(article)
 
+# PRINT HEADLINE AND KEYPHRASES
 print(headline)
 print(keyphrases)
