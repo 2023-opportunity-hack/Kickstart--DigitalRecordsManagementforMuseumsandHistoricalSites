@@ -1,14 +1,24 @@
 import torch
-from transformers import T5ForConditionalGeneration, T5Tokenizer
+
+# extract text from PDF
 import PyPDF2
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+from transformers import (
+    # headline generation libraries
+    T5ForConditionalGeneration,
+    T5Tokenizer,
 
-model = T5ForConditionalGeneration.from_pretrained("Michau/t5-base-en-generate-headline")
-tokenizer = T5Tokenizer.from_pretrained("Michau/t5-base-en-generate-headline")
-model = model.to(device)
+    # extract significant text libraries
+    TokenClassificationPipeline,
+    AutoModelForTokenClassification,
+    AutoTokenizer,
+)
 
+# for significant text tag generation
+from transformers.pipelines import AggregationStrategy
+import numpy as np
 
+# extract text from PDF file
 def extract_text_from_pdf(pdf_file_path):
     text = ""
     try:
@@ -22,11 +32,18 @@ def extract_text_from_pdf(pdf_file_path):
         print(f"Error extracting text from PDF: {str(e)}")
     return text
 
+# headline generation
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# article = extract_text_from_pdf("image_test.pdf")
-# article = extract_text_from_pdf("image_windmill.historypage.wpd.docx.pdf")
-article = extract_text_from_pdf("SIGNIFICANT BUILDINGS.doc.pdf")
-print(article)
+model = T5ForConditionalGeneration.from_pretrained("Michau/t5-base-en-generate-headline")
+tokenizer = T5Tokenizer.from_pretrained("Michau/t5-base-en-generate-headline")
+model = model.to(device)
+
+
+
+
+# article file path
+article = extract_text_from_pdf("VillaGarden.1pghistory.doc.pdf")
 
 
 text = "headline: " + article
@@ -45,5 +62,32 @@ beam_outputs = model.generate(
     early_stopping=True,
 )
 
-result = tokenizer.decode(beam_outputs[0])
-print(result)
+headline = tokenizer.decode(beam_outputs[0])
+
+
+# Define keyphrase extraction pipeline
+class KeyphraseExtractionPipeline(TokenClassificationPipeline):
+    def __init__(self, model, *args, **kwargs):
+        super().__init__(
+            model=AutoModelForTokenClassification.from_pretrained(model),
+            tokenizer=AutoTokenizer.from_pretrained(model),
+            *args,
+            **kwargs
+        )
+
+    def postprocess(self, all_outputs):
+        results = super().postprocess(
+            all_outputs=all_outputs,
+            aggregation_strategy=AggregationStrategy.FIRST,
+        )
+        return np.unique([result.get("word").strip() for result in results])
+
+
+# Load pipeline
+model_name = "ml6team/keyphrase-extraction-distilbert-inspec"
+extractor = KeyphraseExtractionPipeline(model=model_name)
+
+keyphrases = extractor(article)
+
+print(headline)
+print(keyphrases)
