@@ -32,6 +32,16 @@ def extract_text_from_pdf(pdf_file_path):
         print(f"Error extracting text from PDF: {str(e)}")
     return text
 
+def extract_text_from_txt_file(file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            text = file.read()
+        return text
+    except FileNotFoundError:
+        return f"File not found: {file_path}"
+    except Exception as e:
+        return f"An error occurred: {str(e)}"
+
 # HEADLINE GENERATION
 def headline_generation(article):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -79,13 +89,16 @@ def KeyphraseExtration(article):
 
 
 
-file_path = "test_files/SIGNIFICANT BUILDINGS.doc.pdf"
+file_path = "test_files/fabian.txt"
 
 if file_path.endswith(".pdf"):
     article = "headline: " + extract_text_from_pdf(file_path)
+elif file_path.endswith(".txt"):
+    article = "headline: " + extract_text_from_txt_file(file_path)
 else:
-    print("File type not recognized")
+    raise TypeError("File Type Not Recognized")
 
+# print(article)
 headline = headline_generation(article)
 keyphrases = KeyphraseExtration(article)
 # PRINT HEADLINE AND KEYPHRASES
