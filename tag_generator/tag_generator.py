@@ -56,9 +56,9 @@ def process_file(file_path):
     
     # Create a JSON response with the file content
     if tags:
-        response_data = {'file_path': file_path, 'content': file_content, 'tags': tags}
+        response_data = {'file_path': file_path, 'tags': tags}
     else:
-        response_data = {'file_path': file_path, 'content': file_content}   
+        response_data = {'file_path': file_path}   
     return jsonify(response_data)
 
 if __name__ == '__main__':

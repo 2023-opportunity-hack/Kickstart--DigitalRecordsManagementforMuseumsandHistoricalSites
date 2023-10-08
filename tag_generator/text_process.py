@@ -19,10 +19,8 @@ def text_process(file_path):
     from transformers.pipelines import AggregationStrategy
     import numpy as np
 
-    from pptx import Presentation
+    # from pptx import Presentation
     import docx
-    # import wpd
-    # import win32com.client
 
     # PDF TEXT EXTRACTION
     def extract_text_from_pdf(pdf_file_path):
@@ -48,33 +46,33 @@ def text_process(file_path):
         except Exception as e:
             return f"An error occurred: {str(e)}"
 
-    def extract_text_from_powerpoint(file_path):
-        # Replace 'your_presentation.pptx' with the actual path to your PowerPoint file
-        # pptx_file = 'your_presentation.pptx'
+    # def extract_text_from_powerpoint(file_path):
+    #     # Replace 'your_presentation.pptx' with the actual path to your PowerPoint file
+    #     # pptx_file = 'your_presentation.pptx'
 
-        # Load the PowerPoint presentation
-        presentation = Presentation(file_path, encoding='ISO-8859-1')
+    #     # Load the PowerPoint presentation
+    #     presentation = Presentation(file_path, encoding='ISO-8859-1')
 
-        all_text = ""
+    #     all_text = ""
 
-        # Iterate through slides and extract text content
-        for slide in presentation.slides:
-            for shape in slide.shapes:
-                if shape.has_text_frame:
-                    text_frame = shape.text_frame
-                    for paragraph in text_frame.paragraphs:
-                        for run in paragraph.runs:
-                            try:
-                                text = run.text.encode('ISO-8859-1', 'ignore').decode('ISO-8859-1')
-                                all_text += text + "\n"  # Add a newline separator
-                            except UnicodeEncodeError:
-                                all_text += "Encoding Error\n"
+    #     # Iterate through slides and extract text content
+    #     for slide in presentation.slides:
+    #         for shape in slide.shapes:
+    #             if shape.has_text_frame:
+    #                 text_frame = shape.text_frame
+    #                 for paragraph in text_frame.paragraphs:
+    #                     for run in paragraph.runs:
+    #                         try:
+    #                             text = run.text.encode('ISO-8859-1', 'ignore').decode('ISO-8859-1')
+    #                             all_text += text + "\n"  # Add a newline separator
+    #                         except UnicodeEncodeError:
+    #                             all_text += "Encoding Error\n"
 
-                                # Close the presentation file
-        presentation.close()
+    #                             # Close the presentation file
+    #     presentation.close()
 
-        # Print or use the 'all_text' variable
-        return all_text
+    #     # Print or use the 'all_text' variable
+    #     return all_text
 
     def extract_from_docx(file_path):
         # Replace 'your_document.docx' with the actual path to your Word document
@@ -119,32 +117,61 @@ def text_process(file_path):
     # KEYPHRASE EXTRACTION
     # Define keyphrase extraction pipeline
     def KeyphraseExtration(article):
-        class KeyphraseExtractionPipeline(TokenClassificationPipeline):
-            def __init__(self, model, *args, **kwargs):
-                super().__init__(
-                    model=AutoModelForTokenClassification.from_pretrained(model),
-                    tokenizer=AutoTokenizer.from_pretrained(model),
-                    *args,
-                    **kwargs
-                )
+        # class KeyphraseExtractionPipeline(TokenClassificationPipeline):
+        #     def __init__(self, model, *args, **kwargs):
+        #         super().__init__(
+        #             model=AutoModelForTokenClassification.from_pretrained(model),
+        #             tokenizer=AutoTokenizer.from_pretrained(model),
+        #             *args,
+        #             **kwargs
+        #         )
+        #
+        #     def postprocess(self, all_outputs):
+        #         results = super().postprocess(
+        #             all_outputs=all_outputs,
+        #             aggregation_strategy=AggregationStrategy.FIRST,
+        #         )
+        #         return np.unique([result.get("word").strip() for result in results])
+        #
+        # # Load pipeline
+        # model_name = "ml6team/keyphrase-extraction-distilbert-inspec"
+        # extractor = KeyphraseExtractionPipeline(model=model_name)
+        # keyphrases = extractor(article)
+        # ans = []
+        # for x in keyphrases:
+        #     ans.append(x)
+        # return ans
 
-            def postprocess(self, all_outputs):
-                results = super().postprocess(
-                    all_outputs=all_outputs,
-                    aggregation_strategy=AggregationStrategy.FIRST,
-                )
-                return np.unique([result.get("word").strip() for result in results])
 
-        # Load pipeline
-        model_name = "ml6team/keyphrase-extraction-distilbert-inspec"
-        extractor = KeyphraseExtractionPipeline(model=model_name)
-        keyphrases = extractor(article)
-        ans = []
-        for x in keyphrases:
-            ans.append(x)
-        return ans
 
-    # file_path = "test_files/20190501_FPDKC Meeting_AGENDA.docx"
+        import spacy
+        from collections import Counter
+
+        # Load the English language model
+        nlp = spacy.load("en_core_web_sm")
+
+        # # Read the text file
+        # with open(article, "r", encoding="utf-8") as file:
+        #     text = file.read()
+
+        # Process the text using spaCy
+        doc = nlp(article)
+
+        # Filter out stopwords, punctuation marks, and '\n'
+        keywords = [token.text.lower() for token in doc if
+                    not token.is_stop and not token.is_punct and token.text != '\n']
+
+        # Count the frequency of each keyword
+        keyword_freq = Counter(keywords)
+
+        # Get the 10 most common keywords
+        most_common_keywords = keyword_freq.most_common(10)
+
+        # Extract the words from the tuples and store them in a list
+        top_10_words = [keyword for keyword, freq in most_common_keywords]
+
+        # Return the list of the 10 most common words
+        return top_10_words
 
     if file_path.endswith(".pdf"):
         article_text = "headline: " + extract_text_from_pdf(file_path)
